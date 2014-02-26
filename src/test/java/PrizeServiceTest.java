@@ -36,21 +36,40 @@ public class PrizeServiceTest {
 
 		List<String> prizeList = this.getPrizeListForCustomerByEligibility(prizeService, prizes, false);
 		assertEquals("For ineligible customer prize list is empty", 0, prizeList.size());
-
 	}
 
 	@Test
-	public void testGetPrizeForEligible() {
+	public void testGetPrizeForEligibleCustomer() {
 		PrizeService prizeService = new PrizeService();
 		prizeService.setPackagePrizeMapping(this.getPrizeMapping());
 		List<String> prizes = Arrays.<String>asList("SPORTS");
 
 		List<String> prizeList = this.getPrizeListForCustomerByEligibility(prizeService, prizes, true);
-		assertEquals("For ineligible customer prize list is empty", 1, prizeList.size());
+		assertEquals("For eligible customer with SPORTS " +
+				"package prize list contains 1 prize", 1, prizeList.size());
+		assertEquals("FREE SPORTING EVENT TICKET is the price for customer with SPORTS package",
+				"FREE SPORTING EVENT TICKETS", prizeList.get(0));
 
+		prizes = Arrays.<String>asList("KIDS");
+		prizeList = this.getPrizeListForCustomerByEligibility(prizeService, prizes, true);
+		assertEquals("For eligible customer with KIDS " +
+				"package prize list is empty", 0, prizeList.size());
 
-		System.out.println(prizeList.get(0));
+		prizes = Arrays.<String>asList("SPORTS", "MOVIES");
+		prizeList = this.getPrizeListForCustomerByEligibility(prizeService, prizes, true);
+		assertEquals("For eligible customer with SPORTS and MOVIES " +
+				"packages prize list contains 2 prizes", 2, prizeList.size());
+
+		prizes = Arrays.<String>asList("GOSSIP", "MOVIES");
+		prizeList = this.getPrizeListForCustomerByEligibility(prizeService, prizes, true);
+		assertEquals("For eligible customer with MOVIES and GOSSIP " +
+				"packages prize list contains 1 prize", 1, prizeList.size());
+
+		assertEquals("FREE MOVIE TICKETS is the price for customer with GOSSIP and/or MOVIES package",
+				"FREE MOVIE TICKETS", prizeList.get(0));
+
 	}
+
 
 	private List<String> getPrizeListForCustomerByEligibility(PrizeService prizeService,
 															  List<String> prizes, boolean isEligible) {

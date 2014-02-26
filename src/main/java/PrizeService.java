@@ -27,7 +27,14 @@ public class PrizeService {
 		if (!this.eligibilityService.isEligible(accountNumber)) {
 			return prizes;
 		}
-		prizes.add("test");
+
+		String prize;
+		for (String pack : packages) {
+			prize = this.packagePrizeMapping.get(pack);
+			if (prize != null && !prizes.contains(prize)) {
+				prizes.add(prize);
+			}
+		}
 		return prizes;
 	}
 
