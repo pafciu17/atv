@@ -20,11 +20,12 @@ public class PrizeService {
 	 * @throws InvalidAccountNumberException
 	 */
 	public List<String> getPrizes(String accountNumber, List<String> packages) throws InvalidAccountNumberException {
-		if (!this.isValidAccountNumber(accountNumber)) {
-			throw new InvalidAccountNumberException();
-		}
 		List<String> prizes = new ArrayList<String>();
-		if (!this.eligibilityService.isEligible(accountNumber)) {
+		try {
+			if (!this.eligibilityService.isEligible(accountNumber)) {
+				return prizes;
+			}
+		} catch (FailureException e) {
 			return prizes;
 		}
 
