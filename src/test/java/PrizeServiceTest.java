@@ -1,7 +1,9 @@
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -27,21 +29,55 @@ public class PrizeServiceTest {
 	}
 
 	@Test
-	public void testGetPrizeForNotEligibilityCustomer() {
+	public void testGetPrizeForNotEligibleCustomer() {
+		PrizeService prizeService = new PrizeService();
+		prizeService.setPackagePrizeMapping(this.getPrizeMapping());
+		List<String> prizes = Arrays.<String>asList("SPORTS");
+
+		List<String> prizeList = this.getPrizeListForCustomerByEligibility(prizeService, prizes, false);
+		assertEquals("For ineligible customer prize list is empty", 0, prizeList.size());
+
+	}
+
+	@Test
+	public void testGetPrizeForEligible() {
+		PrizeService prizeService = new PrizeService();
+		prizeService.setPackagePrizeMapping(this.getPrizeMapping());
+		List<String> prizes = Arrays.<String>asList("SPORTS");
+
+		List<String> prizeList = this.getPrizeListForCustomerByEligibility(prizeService, prizes, true);
+		assertEquals("For ineligible customer prize list is empty", 1, prizeList.size());
+
+
+		System.out.println(prizeList.get(0));
+	}
+
+	private List<String> getPrizeListForCustomerByEligibility(PrizeService prizeService,
+															  List<String> prizes, boolean isEligible) {
 		String accountNumber = "1234567890";
 		EligibilityService eligibilityService = mock(EligibilityService.class);
-		when(eligibilityService.isEligible(accountNumber)).thenReturn(false);
-
-		PrizeService prizeService = new PrizeService();
+		when(eligibilityService.isEligible(accountNumber)).thenReturn(isEligible);
 		prizeService.setEligibilityService(eligibilityService);
+		List<String> prizeList = null;
 		try {
-			List<String> prizeList = null;
-			prizeList = prizeService.getPrizes(accountNumber, Arrays.<String>asList("SPORTS"));
-			assertEquals("For ineligible customer prize list is empty", 0, prizeList.size());
+			prizeList = prizeService.getPrizes(accountNumber, prizes);
 		} catch (InvalidAccountNumberException e) {
 			fail("InvalidAcountNumberException has been thrown for correct account number");
 		}
+		return prizeList;
 	}
 
 
+	/**
+	 * prepare used mapping for package -> price
+	 *
+	 * @return
+	 */
+	public Map<String,String> getPrizeMapping() {
+		HashMap<String, String> packagePrizeMap = new HashMap<String, String>();
+		packagePrizeMap.put("SPORTS", "FREE SPORTING EVENT TICKETS");
+		packagePrizeMap.put("MOVIES", "FREE MOVIE TICKETS");
+		packagePrizeMap.put("GOSSIP", "FREE MOVIE TICKETS");
+		return packagePrizeMap;
+	}
 }

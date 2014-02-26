@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pawel on 2/26/14.
@@ -7,6 +8,10 @@ import java.util.List;
 public class PrizeService {
 
 	private EligibilityService eligibilityService;
+	/**
+	 * the mapping for package->prize is being injected from outside
+	 */
+	private Map<String, String> packagePrizeMapping;
 
 	/**
 	 *
@@ -24,6 +29,10 @@ public class PrizeService {
 		}
 		prizes.add("test");
 		return prizes;
+	}
+
+	public void setPackagePrizeMapping(Map<String,String> packagePrizeMapping) {
+		this.packagePrizeMapping = packagePrizeMapping;
 	}
 
 	public void setEligibilityService(EligibilityService eligibilityService) {
